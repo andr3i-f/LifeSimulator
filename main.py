@@ -46,8 +46,10 @@ x_rect_speed, y_rect_speed = random.randrange(LOWER, UPPER), random.randrange(LO
 first_time_setup = True
 
 # Initializing amount of critters and a list for them to be in, along with list of random speeds
-critter_list = []
-AMOUNT_OF_CRITTERS = 100  # How many critters can spawn in the game
+critter_dict_list = []
+critter_rect_list = []
+dead_critter_rect_list = []
+AMOUNT_OF_CRITTERS = 50  # How many critters can spawn in the game
 
 while game_running:
     for event in pg.event.get():
@@ -73,14 +75,26 @@ while game_running:
                 while y_rect_speed == 0:
                     y_rect_speed = random.randrange(LOWER, UPPER)
 
-            critter_list.append(critters.create_critter_dict(Critter, y_rect_speed, x_rect_speed,
-                                                             colors[random.randrange(0, 4)]))
+            current_critter = critters.create_critter_dict(Critter, y_rect_speed, x_rect_speed,
+                                                           colors[random.randrange(0, 4)], True)
+            critter_dict_list.append(current_critter)  # Stores the critter dictionary reference
+            critter_rect_list.append(current_critter['critter'])  # Stores the raw critter Rect object
 
         first_time_setup = False
 
-    for critter in critter_list:
-        pg.draw.rect(screen, critter['color'], critter['critter'])
-        critter['critter'].move_ip(critter['x_speed'], critter['y_speed'])
+    for critter in critter_dict_list:
+
+        if critter['alive']:
+            pg.draw.rect(screen, critter['color'], critter['critter'])
+            critter['critter'].move_ip(critter['x_speed'], critter['y_speed'])
+
+        for c in critter_rect_list:  # Checks for any collision and if the colors of the critters aren't the same
+            if critters.check_critter_collision(critter['critter'], c):
+                if critters.check_critter_color(critter['color'], c, critter_dict_list):
+                    critters.remove_critter(critter_dict_list[critter_dict_list.index(critter)])
+
+                # dead_critter_rect_list.append(c)
+                # critter_rect_list.remove(c)
 
         # Checks if the critter objects hit any of the borders, then switches their speed
         if critter['critter'].left < 0:
