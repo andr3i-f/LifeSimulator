@@ -4,9 +4,9 @@ Started on 8/28/2022
 Life Simulator created using PyGame
 """
 import pygame as pg
-import movements as mv
 import critters
 import random
+import gui
 
 # Initializing pygame
 pg.init()
@@ -18,22 +18,20 @@ BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 YELLOW = (251, 255, 0)
+BLACK = (0, 0, 0)
+GRAY = (88, 88, 88)
 
 # List of colors
 colors = [YELLOW, BLUE, RED, GREEN]
 
 # Initializing screen
-x, y = 1000, 800
+x, y = 1100, 800
 SIZE = (x, y)
 screen = pg.display.set_mode(SIZE)
 pg.display.set_caption("Life Simulator by Andrei Florea")
 
 game_running = True  # Main game loop variable
 clock = pg.time.Clock()
-
-# Initializing rect objects
-Critter1 = pg.Rect(100, 100, 50, 50)
-Critter2 = pg.Rect(200, 200, 50, 50)
 
 # Initializing possible beginning speed of rect objects
 LOWER = -2
@@ -49,7 +47,7 @@ first_time_setup = True
 critter_dict_list = []
 critter_rect_list = []
 dead_critter_rect_list = []
-AMOUNT_OF_CRITTERS = 50  # How many critters can spawn in the game
+AMOUNT_OF_CRITTERS = 100  # How many critters can spawn in the game
 
 while game_running:
     for event in pg.event.get():
@@ -60,7 +58,7 @@ while game_running:
 
     if first_time_setup:
         for c in range(AMOUNT_OF_CRITTERS):  # Creating each critter object
-            x_limit, y_limit = random.randrange(50, x - 50), random.randrange(50, y - 50)
+            x_limit, y_limit = random.randrange(50, x - 250), random.randrange(50, y - 50)
             Critter = pg.Rect(x_limit, y_limit, 50, 50)  # Creates a critter object at a random location
 
             x_rect_speed = random.randrange(LOWER, UPPER)
@@ -71,7 +69,7 @@ while game_running:
 
             y_rect_speed = random.randrange(LOWER, UPPER)
             if y_rect_speed == 0:  # Ensures that the y_rect_speed won't be equal to 0
-                print(f'Y speed is {x_rect_speed}, resetting it.')
+                print(f'Y speed is {y_rect_speed}, resetting it.')
                 while y_rect_speed == 0:
                     y_rect_speed = random.randrange(LOWER, UPPER)
 
@@ -82,9 +80,9 @@ while game_running:
 
         first_time_setup = False
 
-    for critter in critter_dict_list:
+    for critter in critter_dict_list:  # Main loop to draw crit and check for crit collision
 
-        if critter['alive']:
+        if critter['alive']:  # Checks to see if the critter is alive
             pg.draw.rect(screen, critter['color'], critter['critter'])
             critter['critter'].move_ip(critter['x_speed'], critter['y_speed'])
 
@@ -100,7 +98,7 @@ while game_running:
         if critter['critter'].left < 0:
             critter['x_speed'] *= -1
 
-        if critter['critter'].right > x:
+        if critter['critter'].right > x - 200:
             critter['x_speed'] *= -1
 
         if critter['critter'].top < 0:
@@ -108,6 +106,14 @@ while game_running:
 
         if critter['critter'].bottom > y:
             critter['y_speed'] *= -1
+
+    amount_of_critters = critters.get_amount_of_critters(critter_dict_list)
+    gui.draw_gui(screen)
+    gui.draw_text(screen,
+                  gui.initialize_green_crit_count_text(amount_of_critters[0]),
+                  gui.initialize_blue_crit_count_text(amount_of_critters[1]),
+                  gui.initialize_red_crit_count_text(amount_of_critters[2]),
+                  gui.initialize_yellow_crit_count_text(amount_of_critters[3]))
 
     pg.display.flip()
     clock.tick(60)
