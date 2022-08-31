@@ -1,7 +1,7 @@
 GREEN = (0, 255, 0)
 YELLOW = (251, 255, 0)
 RED = (255, 0, 0)
-BLUE = (0, 0 ,255)
+BLUE = (0, 0, 255)
 
 
 def create_critter_dict(critter, x_speed, y_speed, color, alive):
@@ -19,7 +19,7 @@ def create_critter_dict(critter, x_speed, y_speed, color, alive):
 def check_critter_collision(critter1, critter2):
     """Checks if two critters collide"""
     if critter1.colliderect(critter2) and critter1 != critter2:
-        print("Critters have collided")
+        # print("Critters have collided")
         return True
 
 
@@ -31,7 +31,7 @@ def remove_critter(critter):
     critter['alive'] = False
     critter['critter'].update(10_000, 10_000, 1, 1)
 
-    print("Done removing critter!")
+    # print("Done removing critter!")
 
 
 def check_critter_color(critter1_color, critter2, critter_dict_list):
@@ -39,7 +39,7 @@ def check_critter_color(critter1_color, critter2, critter_dict_list):
     for critter in critter_dict_list:
         if critter['critter'] == critter2:
             if critter['color'] != critter1_color:
-                print(critter['color'])
+                #  print(critter['color'])
                 #  print("Colors don't match")
                 return True
 
@@ -67,3 +67,12 @@ def get_amount_of_critters(critter_dict_list):
 
     return [green_count, blue_count, red_count, yellow_count]
 
+
+def get_amount_of_alive_critters(critter_dict_list):
+    """Will return the total amount of critters that are alive"""
+    total_critters_alive = 0
+    for crit in critter_dict_list:
+        if crit['alive']:
+            total_critters_alive += 1
+
+    return total_critters_alive

@@ -47,7 +47,7 @@ first_time_setup = True
 critter_dict_list = []
 critter_rect_list = []
 dead_critter_rect_list = []
-AMOUNT_OF_CRITTERS = 100  # How many critters can spawn in the game
+AMOUNT_OF_CRITTERS = 250  # How many critters can spawn in the game
 
 while game_running:
     for event in pg.event.get():
@@ -59,17 +59,17 @@ while game_running:
     if first_time_setup:
         for c in range(AMOUNT_OF_CRITTERS):  # Creating each critter object
             x_limit, y_limit = random.randrange(50, x - 250), random.randrange(50, y - 50)
-            Critter = pg.Rect(x_limit, y_limit, 50, 50)  # Creates a critter object at a random location
+            Critter = pg.Rect(x_limit, y_limit, 25, 25)  # Creates a critter object at a random location
 
             x_rect_speed = random.randrange(LOWER, UPPER)
             if x_rect_speed == 0:  # Ensures that the x_rect_speed won't be equal to 0
-                print(f'X speed is {x_rect_speed}, resetting it.')
+                # print(f'X speed is {x_rect_speed}, resetting it.')
                 while x_rect_speed == 0:
                     x_rect_speed = random.randrange(LOWER, UPPER)
 
             y_rect_speed = random.randrange(LOWER, UPPER)
             if y_rect_speed == 0:  # Ensures that the y_rect_speed won't be equal to 0
-                print(f'Y speed is {y_rect_speed}, resetting it.')
+                # print(f'Y speed is {y_rect_speed}, resetting it.')
                 while y_rect_speed == 0:
                     y_rect_speed = random.randrange(LOWER, UPPER)
 
@@ -78,6 +78,15 @@ while game_running:
             critter_dict_list.append(current_critter)  # Stores the critter dictionary reference
             critter_rect_list.append(current_critter['critter'])  # Stores the raw critter Rect object
 
+        amount_of_critters = critters.get_amount_of_critters(critter_dict_list)
+
+        total_crit_alive = critters.get_amount_of_alive_critters(critter_dict_list)
+        color_pixel_amount_list = gui.create_pixel_actual_amount(amount_of_critters, total_crit_alive)
+        bar_list = gui.create_ratio_display_rect(color_pixel_amount_list[0],
+                                                 color_pixel_amount_list[1],
+                                                 color_pixel_amount_list[2],
+                                                 color_pixel_amount_list[3])
+        gui.display_amount_percentages(screen, bar_list)
         first_time_setup = False
 
     for critter in critter_dict_list:  # Main loop to draw crit and check for crit collision
@@ -115,8 +124,12 @@ while game_running:
                   gui.initialize_red_crit_count_text(amount_of_critters[2]),
                   gui.initialize_yellow_crit_count_text(amount_of_critters[3]))
 
+    total_crit_alive = critters.get_amount_of_alive_critters(critter_dict_list)
+    color_pixel_amount_list = gui.create_pixel_actual_amount(amount_of_critters, total_crit_alive)
+    gui.update_amount_percentages(screen, bar_list, color_pixel_amount_list)
+    gui.display_amount_percentages(screen, bar_list)
+
     pg.display.flip()
     clock.tick(60)
-
 
 pg.quit()
